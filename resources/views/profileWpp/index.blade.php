@@ -11,7 +11,9 @@
 
     <div style="background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); max-width: 800px; margin: 0 auto;">
         {{-- Formulário de Seleção de Instância --}}
-        <form method="GET" action="{{ route('profile.index') }}" style="margin-bottom: 32px;">
+      
+            <form method="GET" action="{{ route('profileWpp.index') }}" style="margin-bottom: 32px;">
+
             <label for="instance" style="display: block; font-size: 14px; margin-bottom: 6px; color: #4b5563;">Selecione a Instância:</label>
             <select name="instance" id="instance" onchange="this.form.submit()"
                 style="padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; width: 100%; max-width: 400px;">
