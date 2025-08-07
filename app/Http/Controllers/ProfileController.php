@@ -9,10 +9,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use App\Models\User;
+
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
+     * Exibe o formulário de edição do perfil do usuário autenticado.
+     * Rota esperada: /dashboard/perfil
      */
     public function edit(Request $request): View
     {
@@ -22,12 +24,14 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update the user's profile information.
+     * Atualiza os dados do perfil do usuário autenticado.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
+        // Preenche os campos validados
         $request->user()->fill($request->validated());
 
+        // Caso o e-mail tenha sido alterado, remove a verificação
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
         }
@@ -38,32 +42,43 @@ class ProfileController extends Controller
     }
 
     /**
-     * Delete the user's account.
+     * Exclui permanentemente a conta do usuário autenticado.
      */
     public function destroy(Request $request): RedirectResponse
     {
+        // Valida a senha atual para segurança
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
         ]);
 
         $user = $request->user();
 
-        Auth::logout();
+        Auth::logout(); // Encerra a sessão
 
-        $user->delete();
+        $user->delete(); // Deleta o usuário
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
     }
+
+    /**
+     * Lista todos os usuários (para área administrativa).
+     * Rota esperada: /dashboard/usuarios
+     */
     public function list(): View
-{
-    $users = User::all();
-    return view('profile.index', compact('users'));
-}
-public function editUser(User $user): View
-{
-    return view('profile.edit', ['user' => $user]);
-}
+    {
+        $users = User::all();
+        return view('profile.index', compact('users'));
+    }
+
+    /**
+     * Formulário de edição de outro usuário (admin).
+     * Rota esperada: /dashboard/usuarios/{user}/editar
+     */
+    public function editUser(User $user): View
+    {
+        return view('profile.edit', ['user' => $user]);
+    }
 }
